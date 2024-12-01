@@ -11,6 +11,18 @@ def PinballGame():
 @app.route('/PlaneWarsGame')
 def FlyGame():
     return render_template("PlaneWarsGame.html")
+@app.route('/GreedySnakeGame')
+def GreedySnakeGame():
+    return render_template("GreedySnakeGame.html")
+@app.route('/FruitNinjaGame')
+def FruitNinjaGame():
+    return render_template("FruitNinjaGame.html")
+@app.route('/MarioGame')
+def MarioGame():
+    return render_template("MarioGame.html")
+@app.route('/2048Game')
+def TwentyFortyEightGame():
+    return render_template("TwentyFortyEightGame.html")
 
 if __name__ == '__main__':
     app.run(port = 8080, debug = True)
