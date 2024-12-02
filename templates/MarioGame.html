@@ -23,9 +23,28 @@
             margin: 10px 0;
             font-family: 'Arial', sans-serif;
         }
+
+        #homeButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #homeButton:hover {
+            background: #1976D2;
+        }
     </style>
 </head>
 <body>
+    <button id="homeButton" onclick="window.location.href='/#games'">Home Page</button>
     <div class="game-container">
         <div class="score">Score: <span id="score">0</span></div>
         <canvas id="gameCanvas" width="800" height="400"></canvas>

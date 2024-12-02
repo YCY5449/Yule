@@ -23,6 +23,10 @@ def MarioGame():
 @app.route('/2048Game')
 def TwentyFortyEightGame():
     return render_template("TwentyFortyEightGame.html")
+@app.route('/TetrisGame')
+def TetrisGame():
+    return render_template("TetrisGame.html")
+
 
 if __name__ == '__main__':
     app.run(port = 8080, debug = True)

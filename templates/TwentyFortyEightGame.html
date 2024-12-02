@@ -51,6 +51,8 @@
             font-size: 35px;
             font-weight: bold;
             color: #776e65;
+            width: 87.5px;
+            height: 87.5px;
         }
         
         .tile-2 { background: #eee4da; width: 87.5px; height: 87.5px; }
@@ -64,9 +66,28 @@
         .tile-512 { background: #edc850; color: #f9f6f2; font-size: 30px;width: 87.5px; height: 87.5px; }
         .tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 25px;width: 87.5px; height: 87.5px; }
         .tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 25px;width: 87.5px; height: 87.5px; }
+
+        #homeButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #homeButton:hover {
+            background: #1976D2;
+        }
     </style>
 </head>
 <body>
+    <button id="homeButton" onclick="window.location.href='/#games'">Home Page</button>
     <div class="game-container">
         <div class="header">
             <h1>2048</h1>
@@ -111,27 +132,22 @@
                 let moved = false;
                 const oldGrid = JSON.stringify(this.grid);
 
-                switch(direction) {
-                    case 'ArrowLeft':
-                        moved = this.moveLeft();
-                        break;
-                    case 'ArrowRight':
-                        this.grid = this.grid.map(row => row.reverse());
-                        moved = this.moveLeft();
-                        this.grid = this.grid.map(row => row.reverse());
-                        break;
-                    case 'ArrowUp':
-                        this.grid = this.transpose(this.grid);
-                        moved = this.moveLeft();
-                        this.grid = this.transpose(this.grid);
-                        break;
-                    case 'ArrowDown':
-                        this.grid = this.transpose(this.grid);
-                        this.grid = this.grid.map(row => row.reverse());
-                        moved = this.moveLeft();
-                        this.grid = this.grid.map(row => row.reverse());
-                        this.grid = this.transpose(this.grid);
-                        break;
+                if (direction === 'ArrowLeft' || direction === 'a') {
+                    moved = this.moveLeft();
+                } else if (direction === 'ArrowRight' || direction === 'd') {
+                    this.grid = this.grid.map(row => row.reverse());
+                    moved = this.moveLeft();
+                    this.grid = this.grid.map(row => row.reverse());
+                } else if (direction === 'ArrowUp' || direction === 'w') {
+                    this.grid = this.transpose(this.grid);
+                    moved = this.moveLeft();
+                    this.grid = this.transpose(this.grid);
+                } else if (direction === 'ArrowDown' || direction === 's') {
+                    this.grid = this.transpose(this.grid);
+                    this.grid = this.grid.map(row => row.reverse());
+                    moved = this.moveLeft();
+                    this.grid = this.grid.map(row => row.reverse());
+                    this.grid = this.transpose(this.grid);
                 }
 
                 if (moved) {
@@ -140,7 +156,7 @@
                     
                     if (this.checkGameOver()) {
                         setTimeout(() => {
-                            alert('游戏结束！最终得分：' + this.score);
+                            alert('Game Over！your score：' + this.score);
                             this.resetGame();
                         }, 300);
                     }
@@ -151,12 +167,14 @@
                 let moved = false;
                 for (let i = 0; i < 4; i++) {
                     let row = this.grid[i].filter(cell => cell !== 0);
-                    for (let j = 0; j < row.length - 1; j++) {
+                    for (let j = 0; j < row.length - 1;) {
                         if (row[j] === row[j + 1]) {
                             row[j] *= 2;
                             this.score += row[j];
                             row.splice(j + 1, 1);
                             moved = true;
+                        } else {
+                            j++;
                         }
                     }
                     const newRow = row.concat(Array(4 - row.length).fill(0));
@@ -222,12 +240,7 @@
         const game = new Game2048();
 
         // 添加键盘事件监听
-        document.addEventListener('keydown', (e) => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                e.preventDefault();
-                game.move(e.key);
-            }
-        });
+        document.addEventListener('keydown', (e) => { game.move(e.key)});
     </script>
 </body>
 </html>

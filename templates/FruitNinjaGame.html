@@ -43,12 +43,34 @@
         #homeButton:hover {
             background: #1976D2;
         }
+
+        #healthContainer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 200px;
+            height: 20px;
+            background: #444;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #healthBar {
+            width: 100%;
+            height: 100%;
+            background: #ff4444;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
-    <button id="homeButton" onclick="window.location.href='/'">Home Page</button>
+    <button id="homeButton" onclick="window.location.href='/#games'">Home Page</button>
     <div class="game-info">
         <div class="score">Score: <span id="score">0</span></div>
+        <div id="healthContainer">
+            <div id="healthBar"></div>
+        </div>
     </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
@@ -61,6 +83,12 @@
         let fruits = [];
         let lastSpawnTime = 0;
         let mouseTrail = [];
+
+        let maxHealth = 100;
+        let currentHealth = maxHealth;
+        const healthBar = document.getElementById('healthBar');
+        const healthLossPerMiss = 35; // 每次失误扣除的血量
+
 
         // 水果类型
         const fruitTypes = [
@@ -145,6 +173,24 @@
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // 检查游戏是否结束
+            if (currentHealth <= 0) {
+                // 绘制游戏结束画面
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = '48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('游戏结束!', canvas.width/2, canvas.height/2 - 50);
+                
+                ctx.font = '24px Arial';
+                ctx.fillText(`最终得分: ${score}`, canvas.width/2, canvas.height/2);
+                ctx.fillText('按空格键重新开始', canvas.width/2, canvas.height/2 + 50);
+                
+                return; // 停止游戏循环
+            }
+            
             // 生成新水果
             if (Date.now() - lastSpawnTime > 1000) {
                 fruits.push(new Fruit());
@@ -159,6 +205,10 @@
                     fruit.isSliced = true;
                     score += fruit.type.points;
                     scoreElement.textContent = score;
+                    if(fruit.type.points < 0) {
+                        currentHealth -= healthLossPerMiss;
+                        updateHealthBar();
+                    }
                     
                     // 创建切割特效
                     createSliceEffect(fruit);
@@ -180,6 +230,7 @@
 
             drawMouseTrail();
             requestAnimationFrame(gameLoop);
+            updateHealthBar();
         }
 
         // 添加切割特效函数
@@ -252,6 +303,10 @@
             return false;
         }
 
+        function updateHealthBar() {
+            healthBar.style.width = (currentHealth / maxHealth * 100) + '%';
+        }
+
         // 鼠标事件监听
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
@@ -262,6 +317,26 @@
 
         canvas.addEventListener('mouseout', () => {
             mouseTrail = [];
+        });
+
+        // 添加重置游戏函数
+        function resetGame() {
+            score = 0;
+            currentHealth = maxHealth;
+            fruits = [];
+            particles = [];
+            mouseTrail = [];
+            scoreElement.textContent = '0';
+            updateHealthBar();
+            lastSpawnTime = Date.now();
+        }
+
+        // 修改键盘事件监听，添加空格键重启游戏功能
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && currentHealth <= 0) {
+                resetGame();
+                requestAnimationFrame(gameLoop);
+            }
         });
 
         // 开始游戏
